@@ -1,5 +1,6 @@
 import http from "http";
-import WebSocket from "ws";
+// import WebSocket from "ws";
+import SocketIO from "socket.io"
 import express from "express";
 
 const app = express();
@@ -20,36 +21,43 @@ const handListen = () => console.log(`Listening on http://localhost:3000`);
 
 // http 서버
 // createServer를 하려면 requestListner 경로가 필요 = express
-const server = http.createServer(app);
+const httpServer = http.createServer(app);
+const wsServer = SocketIO(httpServer);
 
-// websocket 서버
-const wss = new WebSocket.Server({ server });
-
-
-const sockets = [];
-
-// socket: 연결된 브라우저
-wss.on("connection", (socket) => {
-  sockets.push(socket);
-  socket["nickname"] = "Anon";
-  console.log("Connect to Brower ✅");
-  socket.on("close", ()=> console.log("Disconnected from the Browser ❌"));
-  socket.on("message", (msg) => {
-    const message = JSON.parse(msg);
-    const t = message.payload;
-    switch(message.type) {
-      case "new_message":
-        // t.toString;
-        sockets.forEach((aSocket) => aSocket.send(`${socket.nickname}: ${t.toString()}`));
-        // console.log(`${socket.payload}`);
-        break;
-      case "nickname":
-        console.log(message.payload);
-        socket["nickname"] = message.payload;
-        break;
-    }
-  });
+wsServer.on("connection", socket => {
+  socket.on("enter_room", (msg, done) => console.log(msg));
 });
+// websocket 서버
+// const wss = new WebSocket.Server({ server });
 
 
-server.listen(3000, handListen);
+
+
+// const sockets = [];
+
+// // socket: 연결된 브라우저
+// wss.on("connection", (socket) => {
+//   sockets.push(socket);
+//   socket["nickname"] = "Anon";
+//   console.log("Connect to Brower ✅");
+//   socket.on("close", ()=> console.log("Disconnected from the Browser ❌"));
+//   socket.on("message", (msg) => {
+//     const message = JSON.parse(msg);
+//     const t = message.payload;
+//     switch(message.type) {
+//       case "new_message":
+//         // t.toString;
+//         sockets.forEach((aSocket) => aSocket.send(`${socket.nickname}: ${t.toString()}`));
+//         // console.log(`${socket.payload}`);
+//         break;
+//       case "nickname":
+//         console.log(message.payload);
+//         socket["nickname"] = message.payload;
+//         break;
+//     }
+//   });
+// });
+
+
+httpServer.listen(3000, handListen);
+
