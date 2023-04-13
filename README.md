@@ -1,3 +1,3 @@
 # Blue Wave
 
-Zomm Clone using NodeJS, WebRTC and Websockets
+Zoom Clone using NodeJS, WebRTC and Websockets
